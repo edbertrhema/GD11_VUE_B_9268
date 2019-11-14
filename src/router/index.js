@@ -10,9 +10,9 @@ import Router from 'vue-router'
         component: DashboardLayout,
         children: [
     {
-        name: 'UserController',
+        name: 'VehiclesController',
         path: '',
-        component: loadView('userController')
+        component: loadView('vehiclesController')
         }
         ]
     },
