@@ -2,7 +2,7 @@
     <v-container>
         <v-card>
             <v-container grid-list-md mb-0>
-            <h2 class="text-md-center">Data User</h2>
+            <h2 class="text-md-center">Data Kendaraan</h2>
             <v-layout row wrap style="margin:10px">
                 <v-flex xs6>
                     <v-btn
@@ -14,7 +14,7 @@
                     @click="dialog=true"
                     >
                     <v-icon size="18" class="mr-2">mdi-pencil-plus</v-icon>
-                    Tambah User
+                    Tambah Kendaraan
                     </v-btn>
                 </v-flex>
                 <v-flex xs6 class="text-right">
@@ -29,7 +29,7 @@
 
             <v-data-table
                 :headers="headers"
-                :items="users"
+                :items="vehicles"
                 :search="keyword"
                 :loading="load"
                 >
@@ -37,9 +37,10 @@
                         <tbody>
                             <tr v-for="(item,index) in items" :key="item.id">
                                 <td>{{ index+1 }}</td>
-                                <td>{{ item.name }}</td>
-                                <td>{{ item.email }}</td>
-                                <td>{{ item.password }}</td>
+                                <td>{{ item.merk }}</td>
+                                <td>{{ item.type }}</td>
+                                <td>{{ item.licensePlate }}</td>
+                                <td>{{ item.created_at }}</td>
                                 <td class="text-center">
                                     <v-btn 
                                     icon
@@ -67,20 +68,28 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
         <v-card>
             <v-card-title>
-                <span class="headline">User Profile</span>
+                <span class="headline">Kendaraan Profile</span>
                 </v-card-title>
             <v-card-text>
                 <v-container>
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field label="Name*" v-model="form.name" required></v-text-field>
+                            <v-text-field label="Merk*" v-model="form.merk" required></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-text-field label="Email*" v-model="form.email" required></v-text-field>
+                            
+                            <v-overflow-btn
+                        class="my-2"
+                        :items="dropdown_font"
+                        label="Type*"
+                        target="#dropdown-example"
+                        v-model="form.type" required
+                        ></v-overflow-btn>
                         </v-col>
                         <v-col cols="12">
-                            <v-text-field label="Password*" v-model="form.password" type="password" required></v-text-field>
+                            <v-text-field label="License Plate*" v-model="form.licensePlate" required></v-text-field>
                         </v-col>
+                        
                     </v-row>
                 </v-container>
                 <small>*indicates required field</small>
@@ -113,6 +122,7 @@
 export default {
     data() {
         return {
+            dropdown_font: ['Motor', 'Mobil'],
             dialog: false,
             keyword: '',
             headers: [
@@ -121,33 +131,38 @@ export default {
                     value:'no',
                 },
                 {
-                    text:'Name',
-                    value:'name'
+                    text:'Merk',
+                    value:'merk'
                 },
                 {
-                    text:'Email',
-                    value:'email'
+                    text:'Type',
+                    value:'type'
                 },
                 {
-                    text:'Password',
-                    value:'password'
+                    text:'License Plate',
+                    value:'licensePlate'
+                },
+                {
+                    text:'Created At',
+                    value:'created_at'
                 },
                 {
                     text:'Aksi',
                     value:null
                 },
             ],
-            users:[],
+            vehicles:[],
             snackbar: false,
             color: null,
             text: '',
             load:false,
             form: {
-                name: '',
-                email: '',
-                password: ''
+                merk: '',
+                type: '',
+                licensePlate: '',
+                created_at: ''
                 },
-                user:new FormData,
+                kendaraan:new FormData,
                 typeInput: 'new',
                 errors: '',
                 updatedId: '',
@@ -155,18 +170,19 @@ export default {
             },
             methods: {
                 getData() {
-                    var uri = this.$apiUrl + '/user'
+                    var uri = this.$apiUrl + '/kendaraan'
                     this.$http.get(uri).then(response => {
-                        this.users=response.data.message
+                        this.vehicles=response.data.message
                         })
                     },
                 sendData() {
-                    this.user.append('name',this.form.name);
-                    this.user.append('email',this.form.email);
-                    this.user.append('password',this.form.password);
-                    var uri=this.$apiUrl + '/user'
+                    this.kendaraan.append('merk',this.form.merk);
+                    this.kendaraan.append('type',this.form.type);
+                    this.kendaraan.append('licensePlate',this.form.licensePlate);
+                    this.kendaraan.append('created_at',this.form.created_at);
+                    var uri=this.$apiUrl + '/kendaraan'
                     this.load=true 
-                    this.$http.post(uri,this.user).then(response=>{
+                    this.$http.post(uri,this.kendaraan).then(response=>{
                         this.snackbar=true; //mengaktifkan snackbar
                         this.color='green'; //memberi warna snackbar
                         this.text=response.data.message; //memasukkan pesan kesnackbar
@@ -184,12 +200,13 @@ export default {
                     })
                 },
                 updateData(){
-                    this.user.append('name', this.form.name);
-                    this.user.append('email',this.form.email);
-                    this.user.append('password',this.form.password);
-                    var uri=this.$apiUrl + '/user/' + this.updatedId;
+                    this.kendaraan.append('merk',this.form.merk);
+                    this.kendaraan.append('type',this.form.type);
+                    this.kendaraan.append('licensePlate',this.form.licensePlate);
+                    this.kendaraan.append('created_at',this.form.created_at);
+                    var uri=this.$apiUrl + '/kendaraan/' + this.updatedId;
                     this.load=true
-                    this.$http.post(uri,this.user).then(response=>{
+                    this.$http.post(uri,this.kendaraan).then(response=>{
                         this.snackbar=true; //mengaktifkan snackbar
                         this.color = 'green'; //memberi warna snackbar
                         this.text = response.data.message; //memasukkan pesan kesnackbar
@@ -211,13 +228,14 @@ export default {
                 editHandler(item){
                     this.typeInput = 'edit';
                     this.dialog = true;
-                    this.form.name = item.name;
-                    this.form.email = item.email;
-                    this.form.password = '',
+                    this.form.merk = item.merk;
+                    this.form.type = item.type;
+                    this.form.licensePlate = item.licensePlate;
+                    this.form.created_at = item.created_at;
                     this.updatedId = item.id
                 },
                 deleteData(deleteId){ //mengahapus data
-                var uri=this.$apiUrl + '/user/' + deleteId; //data dihapus berdasarkan id
+                var uri=this.$apiUrl + '/kendaraan/' + deleteId; //data dihapus berdasarkan id
                 this.$http.delete(uri).then(response=>{
                         this.snackbar = true;
                         this.text = response.data.message;
@@ -235,15 +253,15 @@ export default {
                     if (this.typeInput === 'new'){
                         this.sendData()
                     } else {
-                        console.log("dddd")
                         this.updateData()
                         }
                     },
                     resetForm(){
                         this.form = {
-                            name : '',
-                            email : '',
-                            password : ''
+                            merk : '',
+                            type : '',
+                            licensePlate : '',
+                            created_at : '',
                         }
                     }
                 },
